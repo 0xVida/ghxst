@@ -1,4 +1,4 @@
-import { motion, useScroll, useMotionValueEvent } from "framer-motion";
+import { motion, useScroll, useMotionValueEvent, useTransform } from "framer-motion";
 import { useRef, useState, ReactNode } from "react";
 
 const geometricStepIcons = [
@@ -107,6 +107,8 @@ const HowItWorksSection = () => {
     offset: ["start start", "end end"],
   });
 
+  const exitOpacity = useTransform(scrollYProgress, [0.85, 0.95], [1, 0]);
+
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     const segments = steps.length;
     let step = Math.floor(latest * segments);
@@ -128,17 +130,38 @@ const HowItWorksSection = () => {
         <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 w-full mt-16 md:mt-0">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-24 items-center">
             
-            <div className="h-fit">
-              <h2 className="font-display text-4xl sm:text-6xl lg:text-[7.5rem] font-medium text-foreground leading-[0.9] tracking-tighter mb-4 lg:mb-8">
-                Simple.<br />
-                <span className="opacity-40">Private.</span><br />
-                Fast.
+            <motion.div 
+              style={{ opacity: exitOpacity }}
+              className="h-fit"
+            >
+              <h2 className="font-display text-5xl sm:text-7xl lg:text-[8.5rem] font-medium text-foreground leading-[0.85] tracking-tighter mb-6 lg:mb-12">
+                <motion.span 
+                  animate={{ opacity: activeIndex === 0 ? 1 : 0.25 }}
+                  transition={{ duration: 0.5 }}
+                  className="block"
+                >
+                  Simple.
+                </motion.span>
+                <motion.span 
+                  animate={{ opacity: activeIndex === 1 ? 1 : 0.25 }}
+                  transition={{ duration: 0.5 }}
+                  className="block"
+                >
+                  Private.
+                </motion.span>
+                <motion.span 
+                  animate={{ opacity: activeIndex >= 2 ? 1 : 0.25 }}
+                  transition={{ duration: 0.5 }}
+                  className="block"
+                >
+                  Fast.
+                </motion.span>
               </h2>
-              <div className="h-px w-full max-w-[200px] bg-border/50 mb-4 lg:mb-8" />
-              <p className="text-lg sm:text-xl text-muted-foreground font-light max-w-sm leading-relaxed">
+              <div className="h-px w-full max-w-[120px] bg-primary/50 mb-6 lg:mb-10" />
+              <p className="text-base sm:text-lg lg:text-xl text-muted-foreground font-light max-w-sm leading-relaxed mb-8">
                 Ghxst abstracts away the cryptography so you can focus on building and transacting smoothly.
               </p>
-            </div>
+            </motion.div>
 
             <div className="relative w-full h-[280px] sm:h-[350px] lg:h-[450px] overflow-visible rounded-3xl">
               {steps.map((step, index) => {
@@ -150,13 +173,14 @@ const HowItWorksSection = () => {
                     key={step.title}
                     initial={false}
                     animate={{
-                      y: isActive ? "0%" : isPast ? "-100%" : "100%",
+                      y: isActive ? "0%" : isPast ? "-50%" : "50%",
                       opacity: isActive ? 1 : 0,
-                      scale: isActive ? 1 : 0.95,
+                      scale: isActive ? 1 : 0.9,
+                      filter: isActive ? "blur(0px)" : "blur(4px)",
                     }}
                     transition={{
-                      duration: 0.6,
-                      ease: [0.25, 1, 0.5, 1], // Very sleek swift ease
+                      duration: 0.7,
+                      ease: [0.32, 0.72, 0, 1], // Custom smooth cubic bezier
                     }}
                     className="absolute inset-0 w-full h-full"
                     style={{ pointerEvents: isActive ? "auto" : "none" }}
